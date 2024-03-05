@@ -22,7 +22,7 @@ from pathlib import Path
 
 BASE_DIR = Path(file).resolve().parent
 
-app.mount("/static", StaticFiles(directory=Path(BASE_DIR, 'static')), name="static")
+app.mount('/static', StaticFiles(directory=os.path.join(current_dir, 'static')), name='static')
 if 'uploaded_pdfs' not in st.session_state:
     st.session_state.uploaded_pdfs = []
 
