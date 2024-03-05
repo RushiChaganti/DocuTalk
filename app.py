@@ -1,4 +1,31 @@
 import streamlit as st
+STATIC_PATH = "./static"
+
+# Configure Streamlit to use the static directory
+st.set_page_config(
+    page_title="ChatPDF",
+    page_icon=":clipboard:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        "Get help": None,
+        "Report a bug": None,
+        "About": None,
+    },
+)
+
+# Update the code to use the STATIC_PATH for serving static files
+app = st._is_running_with_streamlit
+if app:
+    import os
+
+    # Check if the static directory exists, if not, create it
+    if not os.path.exists(STATIC_PATH):
+        os.makedirs(STATIC_PATH)
+
+    # Serve static files from the STATIC_PATH directory
+    app.add_static_route("/static", STATIC_PATH)
+    
 import fitz 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.llms import HuggingFaceHub
