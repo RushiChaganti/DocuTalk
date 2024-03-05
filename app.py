@@ -18,6 +18,11 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="auto",
     )
+from starlette.staticfiles import StaticFiles
+from fastapi import FastAPI
+
+app = FastAPI(title="static_api")
+app.mount("/static", StaticFiles(directory="app/static"))
 
 if 'uploaded_pdfs' not in st.session_state:
     st.session_state.uploaded_pdfs = []
