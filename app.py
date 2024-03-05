@@ -1,72 +1,29 @@
 import streamlit as st
-import os
-from pathlib import Path
-
-# Ensure the static directory exists
-STATIC_PATH = "./static"
-Path(STATIC_PATH).mkdir(parents=True, exist_ok=True)
-
-# Configure Streamlit to use the static directory
-st.set_page_config(
-    page_title="ChatPDF",
-    page_icon=":clipboard:",
-    layout="wide",
-    initial_sidebar_state="expanded",
-    menu_items={
-        "Get help": None,
-        "Report a bug": None,
-        "About": None,
-    },
-)
-
-# Serve static files from the STATIC_PATH directory
-st.markdown(
-    f'<style>div.row-widget.stRadio > div{'
-    f'flex-direction:row; '
-    f'}</style>',
-    unsafe_allow_html=True,
-)
-st.markdown(
-    f'<style>.reportview-container .main .block-container{{'
-    f'max-width: 95%;'
-    f'padding-top: 2rem;'
-    f'padding-right: 2rem;'
-    f'padding-left: 2rem;'
-    f'padding-bottom: 2rem;'
-    f'}}</style>',
-    unsafe_allow_html=True,
-)
-app = st._is_running_with_streamlit
-if app:
-    import os
-
-    # Check if the static directory exists, if not, create it
-    if not os.path.exists(STATIC_PATH):
-        os.makedirs(STATIC_PATH)
-
-    # Serve static files from the STATIC_PATH directory
-    app.add_static_route("/static", STATIC_PATH)
-    
 import fitz 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.llms import HuggingFaceHub
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
+import os
 import time
+os.environ['HUGGINGFACEHUB_API_TOKEN'] 
 
-# Initialize session state
 if 'uploaded_pdfs' not in st.session_state:
     st.session_state.uploaded_pdfs = []
 
-# Function to load document and QA
 def load_doc_and_qa(pdf_doc):
     try:
         pdf_bytes = pdf_doc.read()
 
         pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
-        text = [page.get_text() for page in pdf_document]
+        text = []
 
+        for page_num in range(len(pdf_document)):
+            page = pdf_document[page_num]
+            text.append(page.get_text())
+
+        
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
         text = text_splitter.create_documents(text)
         embedding = HuggingFaceEmbeddings()
@@ -79,20 +36,23 @@ def load_doc_and_qa(pdf_doc):
 
         return 'Document has been successfully loaded'
     except Exception as e:
-        st.error(f"Error loading the document: {str(e)}")
+        return f"Error loading the document: {str(e)}"
 
 # Streamlit UI
 st.title("ChatPDF")
-st.write("Upload PDF Files. Once uploaded, you can begin chatting with each PDF :)")
+st.write("Upload PDF Files, then click on Load PDF File.")
+st.write("Once the documents have been loaded, you can begin chatting with each PDF :)")
 
 pdf_docs = st.file_uploader("Load PDF files", type=["pdf"], accept_multiple_files=True)
+status = st.empty()
 
-if pdf_docs:
-    st.write("Processing PDFs...")
-    for pdf_doc in pdf_docs:
-        with st.spinner(f"Loading PDF: {pdf_doc.name}..."):
-            load_doc_and_qa(pdf_doc)
-            st.success(f"PDF '{pdf_doc.name}' loaded successfully")
+if pdf_docs is not None:
+    load_pdfs = st.button('Load PDF files')
+    if load_pdfs:
+        for pdf_doc in pdf_docs:
+            with st.spinner(f"Loading PDF: {pdf_doc.name}..."):
+                status.text(load_doc_and_qa(pdf_doc))
+                st.success(f"PDF '{pdf_doc.name}' loaded successfully")
 
 for pdf_doc, qa_instance in st.session_state.uploaded_pdfs:
     st.write(f"Processing PDF: {pdf_doc.name}")
@@ -105,6 +65,6 @@ for pdf_doc, qa_instance in st.session_state.uploaded_pdfs:
         output = qa_instance.run(input_question)
         end_time = time.time()  
         processing_time = end_time - start_time 
-        st.write("Output:")
+        st.text("Output:")
         st.write(output)
-        st.write(f"Time taken to process the query: {processing_time :.2f} seconds")
+        st.text(f"Time taken to process the query: {processing_time :.2f} seconds")
