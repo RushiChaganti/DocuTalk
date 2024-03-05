@@ -7,7 +7,17 @@ from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 import os
 import time
+
+# Set Hugging Face API token
 os.environ['HUGGINGFACEHUB_API_TOKEN'] 
+
+# Set custom static directory
+st.set_page_config(
+    page_title="ChatPDF",
+    page_icon=":book:",
+    layout="centered",
+    initial_sidebar_state="auto",
+    )
 
 if 'uploaded_pdfs' not in st.session_state:
     st.session_state.uploaded_pdfs = []
