@@ -1,13 +1,12 @@
 import streamlit as st
-import fitz 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.llms import HuggingFaceHub
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.chains import RetrievalQA
-import time
+import os
+from pathlib import Path
 
-# Set page configuration
+# Ensure the static directory exists
+STATIC_PATH = "./static"
+Path(STATIC_PATH).mkdir(parents=True, exist_ok=True)
+
+# Configure Streamlit to use the static directory
 st.set_page_config(
     page_title="ChatPDF",
     page_icon=":clipboard:",
@@ -19,6 +18,42 @@ st.set_page_config(
         "About": None,
     },
 )
+
+# Serve static files from the STATIC_PATH directory
+st.markdown(
+    f'<style>div.row-widget.stRadio > div{'
+    f'flex-direction:row; '
+    f'}</style>',
+    unsafe_allow_html=True,
+)
+st.markdown(
+    f'<style>.reportview-container .main .block-container{{'
+    f'max-width: 95%;'
+    f'padding-top: 2rem;'
+    f'padding-right: 2rem;'
+    f'padding-left: 2rem;'
+    f'padding-bottom: 2rem;'
+    f'}}</style>',
+    unsafe_allow_html=True,
+)
+app = st._is_running_with_streamlit
+if app:
+    import os
+
+    # Check if the static directory exists, if not, create it
+    if not os.path.exists(STATIC_PATH):
+        os.makedirs(STATIC_PATH)
+
+    # Serve static files from the STATIC_PATH directory
+    app.add_static_route("/static", STATIC_PATH)
+    
+import fitz 
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.llms import HuggingFaceHub
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
+from langchain.chains import RetrievalQA
+import time
 
 # Initialize session state
 if 'uploaded_pdfs' not in st.session_state:
