@@ -7,7 +7,8 @@ DocuTalk is a Streamlit application that allows you to upload various document f
 To run this application, you need to have the following dependencies installed:
 
 ```
-pip install streamlit langchain_community pypdf2 chromadb langchain python-docx python-pptx ollama pull mistral
+pip install streamlit langchain_community pypdf2 chromadb langchain python-docx python-pptx
+ollama pull mistral
 ollama pull nomic-embed-text
 ```
 
