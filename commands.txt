@@ -1,0 +1,6 @@
+pip install streamlit langchain_community    pypdf2 chromadb langchain python-docx python-pptx 
+
+ollama pull mistral 
+ollama pull nomic-embed-text
+
+streamlit run app.py
