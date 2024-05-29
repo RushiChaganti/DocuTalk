@@ -7,7 +7,6 @@ from langchain_community.vectorstores import Chroma
 from langchain_community import embeddings
 from langchain_community.llms import Ollama
 import time
-<<<<<<< HEAD
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -16,22 +15,6 @@ from collections import namedtuple
 import pandas as pd
 import matplotlib.pyplot as plt
 import threading
-=======
-
-# Set Hugging Face API token
-os.environ['HUGGINGFACEHUB_API_TOKEN'] 
-
-# Set custom static directory
-st.set_page_config(
-    page_title="ChatPDF",
-    page_icon=":book:",
-    layout="centered",
-    initial_sidebar_state="auto",
-    )
-from pathlib import Path
-
-app.mount('/static', StaticFiles(directory=os.path.join(current_dir, 'static')), name='static')
->>>>>>> e7b2a2dea06797f2ee5afea5dcdd669b707a5424
 
 def process_input(uploaded_files):
     # Extract text from uploaded files
